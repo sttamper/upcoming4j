@@ -1,3 +1,25 @@
 jreleaser {
-    configFile = file("$rootDir/jreleaser.yml")
+    project {
+        name = 'upcoming4j'
+        authors = ['Captain Mcwiise']
+        license = 'Apache-2.0'
+        links {
+            homepage = 'https://stamperlabs.io/upcoming4j'
+        }
+        versionPattern = 'SEMVER'
+        inceptionYear = '2025'
+    }
+
+    release {
+        github {
+            enabled = false
+            repoOwner = 'Stamper-Labs'
+            changelog {
+                enabled = true
+                formatted = 'ALWAYS'
+                preset = 'conventional-commits'
+                format = '- {{commitShortHash}} {{commitTitle}}'
+            }
+        }
+    }
 }
