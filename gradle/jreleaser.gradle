@@ -12,7 +12,7 @@ jreleaser {
 
     release {
         github {
-            enabled = false
+            enabled = true
             repoOwner = 'Stamper-Labs'
             changelog {
                 enabled = true
