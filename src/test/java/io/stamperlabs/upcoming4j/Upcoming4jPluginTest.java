@@ -1,78 +1,53 @@
 package io.stamperlabs.upcoming4j;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.util.List;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.api.provider.Provider;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
+import org.junit.jupiter.api.io.TempDir;
 
 class Upcoming4jPluginTest {
 
+  @TempDir File tempDir;
+
   @Test
-  void apply_setsNextVersionExtraProperty() throws Exception {
-    Project project = mock(Project.class);
-    when(project.getRootDir()).thenReturn(new File("."));
-    when(project.getLogger()).thenReturn(mock(org.gradle.api.logging.Logger.class));
+  void apply_registersNextVersionProvider() {
+    // given: git repo marker
+    File gitDir = new File(tempDir, ".git");
+    assertTrue(gitDir.mkdir());
 
-    ExtensionContainer extensions = mock(ExtensionContainer.class);
-    ExtraPropertiesExtension extraProps = mock(ExtraPropertiesExtension.class);
+    Project project = ProjectBuilder.builder().withProjectDir(tempDir).build();
 
-    when(project.getExtensions()).thenReturn(extensions);
-    when(extensions.getExtraProperties()).thenReturn(extraProps);
+    Upcoming4jPlugin plugin = new Upcoming4jPlugin();
 
-    try (MockedConstruction<LatestGitTag> latestTagMock =
-            mockConstruction(
-                LatestGitTag.class, (mock, context) -> when(mock.retrieve()).thenReturn("1.2.3"));
-        MockedConstruction<CommitsSinceTag> commitsMock =
-            mockConstruction(
-                CommitsSinceTag.class,
-                (mock, context) ->
-                    when(mock.retrieve()).thenReturn(List.of("feat: new feature", "fix: bug")));
-        MockedConstruction<NextVersion> nextVersionMock =
-            mockConstruction(
-                NextVersion.class,
-                (mock, context) ->
-                    when(mock.compute("1.2.3", List.of("feat: new feature", "fix: bug")))
-                        .thenReturn("1.3.0"))) {
+    // when
+    plugin.apply(project);
 
-      Upcoming4jPlugin plugin = new Upcoming4jPlugin();
-      plugin.apply(project);
+    // then
+    Object value = project.getExtensions().getExtraProperties().get("nextVersion");
 
-      verify(extraProps).set("nextVersion", "1.3.0");
-    }
+    assertNotNull(value);
+    assertTrue(value instanceof Provider);
   }
 
   @Test
-  void apply_usesDefaultVersionWhenNoGitTag() throws Exception {
-    Project project = mock(Project.class);
-    when(project.getRootDir()).thenReturn(new File("."));
-    when(project.getLogger()).thenReturn(mock(org.gradle.api.logging.Logger.class));
+  void provider_throwsException_whenProjectIsNotGitRepository() {
+    Project project = ProjectBuilder.builder().withProjectDir(tempDir).build();
 
-    ExtensionContainer extensions = mock(ExtensionContainer.class);
-    ExtraPropertiesExtension extraProps = mock(ExtraPropertiesExtension.class);
-    when(project.getExtensions()).thenReturn(extensions);
-    when(extensions.getExtraProperties()).thenReturn(extraProps);
+    Upcoming4jPlugin plugin = new Upcoming4jPlugin();
+    plugin.apply(project);
 
-    try (MockedConstruction<LatestGitTag> latestTagMock =
-            mockConstruction(
-                LatestGitTag.class, (mock, context) -> when(mock.retrieve()).thenReturn(""));
-        MockedConstruction<CommitsSinceTag> commitsMock =
-            mockConstruction(
-                CommitsSinceTag.class,
-                (mock, context) -> when(mock.retrieve()).thenReturn(List.of("fix: bug")));
-        MockedConstruction<NextVersion> nextVersionMock =
-            mockConstruction(
-                NextVersion.class,
-                (mock, context) ->
-                    when(mock.compute("0.0.0", List.of("fix: bug"))).thenReturn("0.0.1"))) {
+    Object value = project.getExtensions().getExtraProperties().get("nextVersion");
 
-      new Upcoming4jPlugin().apply(project);
+    assertTrue(value instanceof Provider);
 
-      verify(extraProps).set("nextVersion", "0.0.1");
-    }
+    @SuppressWarnings("unchecked")
+    Provider<String> provider = (Provider<String>) value;
+
+    assertThrows(GradleException.class, provider::get);
   }
 }

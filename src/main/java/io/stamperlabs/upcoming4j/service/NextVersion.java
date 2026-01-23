@@ -1,5 +1,6 @@
-package io.stamperlabs.upcoming4j;
+package io.stamperlabs.upcoming4j.service;
 
+import io.stamperlabs.upcoming4j.exception.Upcoming4jException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,8 +9,9 @@ import org.gradle.api.Project;
 public class NextVersion {
 
   private final Project project;
+  private static final String TAG_PREFIX = "v";
 
-  public NextVersion(Project project) {
+  public NextVersion(Project project) throws Upcoming4jException {
     this.project = project;
   }
 
@@ -26,7 +28,7 @@ public class NextVersion {
     Matcher matcher = pattern.matcher(normalizedTag);
 
     if (!matcher.matches()) {
-      throw new IllegalArgumentException(
+      throw new Upcoming4jException(
           "Current tag '" + normalizedTag + "' is not semantic version format (X.Y.Z)");
     }
 
@@ -72,6 +74,6 @@ public class NextVersion {
     if (currentTag == null || currentTag.isBlank()) {
       return currentTag;
     }
-    return currentTag.startsWith("v") ? currentTag.substring(1) : currentTag;
+    return currentTag.startsWith(TAG_PREFIX) ? currentTag.substring(1) : currentTag;
   }
 }
