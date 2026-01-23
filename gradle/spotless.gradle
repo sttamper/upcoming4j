@@ -1,7 +1,0 @@
-spotless {
-  java {
-    targetExclude('build/generated-main-avro-java/**/*.java')
-    removeUnusedImports()
-    googleJavaFormat()
-  }
-}
