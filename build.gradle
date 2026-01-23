@@ -9,7 +9,7 @@ apply from: 'gradle/jreleaser.gradle'
 apply from: 'gradle/spotless.gradle'
 
 group = 'io.stamperlabs.upcoming4j'
-version = '0.0.4'
+version = '0.0.1'
 
 repositories {
     mavenCentral()
