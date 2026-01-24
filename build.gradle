@@ -6,8 +6,10 @@ plugins {
     id 'com.gradle.plugin-publish' version '2.0.0'
 }
 
+apply from: 'gradle/jreleaser.gradle'
+
 group = 'com.stamperlabs.upcoming4j'
-version = '0.0.6'
+version = '0.0.4'
 
 gradlePlugin {
     website = 'https://github.com/Stamper-Labs/upcoming4j'

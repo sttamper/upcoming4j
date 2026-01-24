@@ -3,9 +3,6 @@ jreleaser {
     name = 'upcoming4j'
     authors = ['Captain Mcwiise']
     license = 'Apache-2.0'
-    links {
-      homepage = 'https://stamperlabs.com/upcoming4j'
-    }
     versionPattern = 'SEMVER'
     inceptionYear = '2025'
   }
@@ -13,7 +10,7 @@ jreleaser {
   release {
     github {
       enabled = true
-      repoOwner = 'Stamper-Labs'
+      repoOwner = 'stamperlabs'
       changelog {
         enabled = true
         formatted = 'ALWAYS'
