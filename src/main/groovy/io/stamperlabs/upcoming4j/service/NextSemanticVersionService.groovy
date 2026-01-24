@@ -3,12 +3,12 @@ package io.stamperlabs.upcoming4j.service
 import io.stamperlabs.upcoming4j.exception.Upcoming4jException
 import org.gradle.api.Project
 
-class NextSemanticVersion {
+class NextSemanticVersionService {
 
   private final Project project
   private static final String SEMVER_TAG_REGEX = /(\d+)\.(\d+)\.(\d+)/
 
-  NextSemanticVersion(Project project) {
+  NextSemanticVersionService(Project project) {
     this.project = project
   }
 

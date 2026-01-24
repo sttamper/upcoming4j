@@ -2,14 +2,19 @@ plugins {
     id 'java-gradle-plugin'
     id 'groovy'
     id 'maven-publish'
+    id 'com.diffplug.spotless' version '6.25.0'
+    id 'org.jreleaser' version '1.22.0'
 }
+
+apply from: 'gradle/jreleaser.gradle'
+apply from: 'gradle/spotless.gradle'
 
 repositories {
     mavenCentral()
 }
 
 group = 'io.stamperlabs.upcoming4j'
-version = '0.0.5'
+version = '0.0.1'
 
 dependencies {
     testImplementation libs.spock.core

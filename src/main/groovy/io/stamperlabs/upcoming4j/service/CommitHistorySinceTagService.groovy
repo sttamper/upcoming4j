@@ -17,18 +17,11 @@ class CommitHistorySinceTagService {
     def gitLogCommand = ["bash", "-c", "git log ${tag}..HEAD --pretty=format:%s"]
     project.logger.lifecycle("Git log command: ${gitLogCommand.join(' ')}")
 
-    def logResultExec = project.providers.exec {
-      commandLine(gitLogCommand)
-      ignoreExitValue = true
-    }.execResult.get()
 
-    if (logResultExec.exitValue != EXIT_CODE_SUCCESS) {
-      throw new Upcoming4jException(
-          "Cannot retrieve commit history since tag '${tag}', command execution failed: exit_code: ${logResultExec.exitValue}"
-      )
-    }
+    String commitMessagesRaw = project.providers.exec {
+      commandLine "bash", "-c", "git log ${tag}..HEAD --pretty=format:%s"
+    }.standardOutput.asText.get().trim()
 
-    def commitMessagesRaw = logResultExec.standardOutput.asText.get().trim()
     if (!commitMessagesRaw) {
       project.logger.lifecycle("No commits found since tag: ${tag}")
       return []
