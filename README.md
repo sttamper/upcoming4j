@@ -37,7 +37,7 @@ Installing the `Upcoming4j` plugin is straightforward. Simply add it to your `bu
 
 ```groovy
 plugins {
-   id 'com.stamperlabs.upcoming4j' version '0.0.2'
+   id 'com.stamperlabs.upcoming4j' version '0.0.3'
 }
 ```
 

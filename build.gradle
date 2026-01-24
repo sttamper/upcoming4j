@@ -8,9 +8,10 @@ plugins {
 }
 
 group = 'com.stamperlabs.upcoming4j'
-version = '0.0.2'
+version = '0.0.3'
 
 gradlePlugin {
+    website = 'https://github.com/Stamper-Labs/upcoming4j'
     vcsUrl = 'https://github.com/Stamper-Labs/upcoming4j'
     plugins {
         greeting {
