@@ -1,6 +1,6 @@
-package com.stamperlabs.upcoming4j.service
+package com.sttamper.upcoming4j.service
 
-import com.stamperlabs.upcoming4j.exception.Upcoming4jException
+import com.sttamper.upcoming4j.exception.Upcoming4jException
 import org.gradle.api.Project
 
 class LatestCreatedTagService {

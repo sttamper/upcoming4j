@@ -8,19 +8,19 @@ plugins {
 
 apply from: 'gradle/jreleaser.gradle'
 
-group = 'com.stamperlabs.upcoming4j'
-version = '0.0.5'
+group = 'com.sttamper.upcoming4j'
+version = '0.0.6'
 
 gradlePlugin {
-    website = 'https://github.com/stamperlabs/upcoming4j'
-    vcsUrl = 'https://github.com/stamperlabs/upcoming4j'
+    website = 'https://github.com/sttamper/upcoming4j'
+    vcsUrl = 'https://github.com/sttamper/upcoming4j'
     plugins {
         greeting {
-            id = 'com.stamperlabs.upcoming4j'
+            id = 'com.sttamper.upcoming4j'
             displayName = 'Upcoming4j Gradle Plugin'
             description = 'Compute the next semantic version based on conventional commits'
             tags.set(['semantic-versioning', 'conventional-commits', 'java', 'kotlin', 'versioning'])
-            implementationClass = 'com.stamperlabs.upcoming4j.Upcoming4jPlugin'
+            implementationClass = 'com.sttamper.upcoming4j.Upcoming4jPlugin'
         }
     }
 }

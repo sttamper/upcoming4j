@@ -41,17 +41,17 @@ Configuration cache friendly → fully compatible with Gradle’s configuration 
 
   ```groovy
   plugins {
-     id 'com.stamperlabs.upcoming4j' version '0.0.5'
+     id 'com.stamperlabs.upcoming4j' version '0.0.6'
   }
   ```
 
 ### Usage
 
-- The computed version is available as a project property **computeNextVersion**. 
+- The computed version is available as a project property **nx**. 
   Add it in the `build.gradle` file:
 
   ```groovy
-  version = computeNextVersion()
+  version = nx()
   ```
 
 - Reload Gradle project to apply the changes.

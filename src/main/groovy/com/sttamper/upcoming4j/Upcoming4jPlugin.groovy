@@ -1,9 +1,9 @@
-package com.stamperlabs.upcoming4j
+package com.sttamper.upcoming4j
 
-import com.stamperlabs.upcoming4j.exception.Upcoming4jException
-import com.stamperlabs.upcoming4j.service.CommitHistorySinceTagService
-import com.stamperlabs.upcoming4j.service.LatestCreatedTagService
-import com.stamperlabs.upcoming4j.service.NextSemanticVersionService
+import com.sttamper.upcoming4j.exception.Upcoming4jException
+import com.sttamper.upcoming4j.service.CommitHistorySinceTagService
+import com.sttamper.upcoming4j.service.LatestCreatedTagService
+import com.sttamper.upcoming4j.service.NextSemanticVersionService
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -13,7 +13,7 @@ class Upcoming4jPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.logger.lifecycle("Initializing Upcoming4j Plugin")
         this.checkGitProject(project);
-        project.ext.computeNextVersion = {
+        project.ext.nx = {
             def latestCreatedTagService = new LatestCreatedTagService(project)
             def currentTag = latestCreatedTagService.retrieve()
             def commitHistorySinceTagService = new CommitHistorySinceTagService(project)

@@ -1,4 +1,4 @@
-package com.stamperlabs.upcoming4j.service
+package com.sttamper.upcoming4j.service
 
 import org.gradle.api.Project
 
