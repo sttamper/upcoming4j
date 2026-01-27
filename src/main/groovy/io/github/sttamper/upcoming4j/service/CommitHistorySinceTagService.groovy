@@ -1,4 +1,4 @@
-package com.sttamper.upcoming4j.service
+package io.github.sttamper.upcoming4j.service
 
 import org.gradle.api.Project
 

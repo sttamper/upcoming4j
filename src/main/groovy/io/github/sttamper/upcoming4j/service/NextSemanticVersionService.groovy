@@ -1,6 +1,6 @@
-package com.sttamper.upcoming4j.service
+package io.github.sttamper.upcoming4j.service
 
-import com.sttamper.upcoming4j.exception.Upcoming4jException
+import io.github.sttamper.upcoming4j.exception.Upcoming4jException
 import org.gradle.api.Project
 
 class NextSemanticVersionService {

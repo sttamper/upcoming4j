@@ -1,9 +1,9 @@
-package com.sttamper.upcoming4j
+package io.github.sttamper.upcoming4j
 
-import com.sttamper.upcoming4j.exception.Upcoming4jException
-import com.sttamper.upcoming4j.service.CommitHistorySinceTagService
-import com.sttamper.upcoming4j.service.LatestCreatedTagService
-import com.sttamper.upcoming4j.service.NextSemanticVersionService
+import io.github.sttamper.upcoming4j.exception.Upcoming4jException
+import io.github.sttamper.upcoming4j.service.CommitHistorySinceTagService
+import io.github.sttamper.upcoming4j.service.LatestCreatedTagService
+import io.github.sttamper.upcoming4j.service.NextSemanticVersionService
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
