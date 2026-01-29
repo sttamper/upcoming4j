@@ -41,7 +41,7 @@ Configuration cache friendly → fully compatible with Gradle’s configuration 
 
   ```groovy
   plugins {
-     id 'com.stamperlabs.upcoming4j' version '0.0.1'
+     id 'io.github.sttamper.upcoming4j' version '0.0.1'
   }
   ```
 
