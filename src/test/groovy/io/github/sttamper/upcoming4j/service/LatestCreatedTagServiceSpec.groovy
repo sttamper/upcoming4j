@@ -89,7 +89,7 @@ class LatestCreatedTagServiceSpec extends Specification {
         "Cannot retrieve last tag. Invalid git tag format 'invalid_tag'. Expected format is vX.Y.Z (example: v1.2.3)"
   }
 
-  def "retrieve should throw exception if no tags found"() {
+  def "retrieve should return NONE_TAG if no tags found"() {
     given:
     ExecOutput fetchExecMock = Mock(ExecOutput)
     ExecOutput.StandardStreamContent fetchStdoutMock = Mock(ExecOutput.StandardStreamContent)
@@ -108,10 +108,12 @@ class LatestCreatedTagServiceSpec extends Specification {
     providersMock.exec(_) >>> [fetchExecMock, forEachExecMock]
 
     when:
-    service.retrieve()
+    String latestTag = service.retrieve()
 
     then:
-    Upcoming4jException ex = thrown(Upcoming4jException)
-    ex.message == "Cannot retrieve last tag. No git tags found in the repository."
+    latestTag == LatestCreatedTagService.NONE_TAG
+
+    and:
+    1 * loggerMock.lifecycle("No git tags found in the repository. default tag to: ${LatestCreatedTagService.NONE_TAG}")
   }
 }

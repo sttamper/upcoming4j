@@ -7,15 +7,16 @@ class LatestCreatedTagService {
 
   private final Project project
   private static final String GIT_TAG_REGEX = /^v\d+\.\d+\.\d+$/
+  public static final String NONE_TAG = "none"
 
   LatestCreatedTagService(Project project) {
     this.project = project
   }
 
   String retrieve() throws Upcoming4jException {
-    project.logger.lifecycle("RETRIEVE THE LATEST CREATED TAG" )
+    project.logger.lifecycle("RETRIEVE THE LATEST CREATED TAG")
     def gitFetchCommand = ["bash", "-c", "git fetch --tags --prune"]
-    project.logger.lifecycle("fetch git tags: ${gitFetchCommand.join(' ')}" )
+    project.logger.lifecycle("fetch git tags: ${gitFetchCommand.join(' ')}")
     project.providers.exec {
       commandLine(gitFetchCommand)
     }.standardOutput.asText.get()
@@ -32,7 +33,8 @@ class LatestCreatedTagService {
 
     String latestGitTag = latestGitTagRaw?.trim() ?: ""
     if (!latestGitTag) {
-      throw new Upcoming4jException("Cannot retrieve last tag. No git tags found in the repository.")
+      project.logger.lifecycle("No git tags found in the repository. default tag to: ${NONE_TAG}")
+      return NONE_TAG
     }
 
     if (!isTagFormatValid(latestGitTag)) {

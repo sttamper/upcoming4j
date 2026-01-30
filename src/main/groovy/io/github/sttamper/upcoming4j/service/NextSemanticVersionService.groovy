@@ -7,15 +7,17 @@ class NextSemanticVersionService {
 
   private final Project project
   private static final String SEMVER_TAG_REGEX = /(\d+)\.(\d+)\.(\d+)/
-
+  private static final String STARTER_VERSION = "0.0.1"
   NextSemanticVersionService(Project project) {
     this.project = project
   }
 
-  String compute(List<String> commitHistory, String currentTag) throws Upcoming4jException{
+  String compute(List<String> commitHistory, String currentTag) throws Upcoming4jException {
     project.logger.lifecycle("COMPUTE NEXT VERSION. COMMIT HISTORY SIZE: ${commitHistory.size()}, TAG: ${currentTag}")
-    if (!currentTag) {
-      throw new Upcoming4jException("Cannot compute next version. Tag is null or empty.")
+
+    if(!currentTag || currentTag == LatestCreatedTagService.NONE_TAG) {
+      project.logger.lifecycle("No previous tag found. Starting from version ${STARTER_VERSION}")
+      return STARTER_VERSION
     }
 
     def currentVersionNumber = getVersionNumberFromTag(currentTag)

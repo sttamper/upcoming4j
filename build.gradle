@@ -9,7 +9,7 @@ plugins {
 apply from: 'gradle/jreleaser.gradle'
 
 group = 'io.github.sttamper.upcoming4j'
-version = '0.0.3'
+version = '0.0.4'
 
 gradlePlugin {
     website = 'https://github.com/sttamper/upcoming4j'

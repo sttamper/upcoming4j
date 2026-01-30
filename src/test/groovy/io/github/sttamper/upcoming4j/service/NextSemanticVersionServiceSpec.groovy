@@ -100,20 +100,37 @@ class NextSemanticVersionServiceSpec extends Specification {
     1 * loggerMock.lifecycle("Next version remains the same: '1.2.3'")
   }
 
-  def "compute should throw exception if current tag is null or empty"() {
+  def "compute should return starter version if current tag is null or empty"() {
     when:
-    service.compute([], null)
+    String nextVersionNull = service.compute([], null)
 
     then:
-    Upcoming4jException ex1 = thrown(Upcoming4jException)
-    ex1.message == "Cannot compute next version. Tag is null or empty."
+    nextVersionNull == "0.0.1"
+    1 * loggerMock.lifecycle("COMPUTE NEXT VERSION. COMMIT HISTORY SIZE: 0, TAG: null")
+    1 * loggerMock.lifecycle("No previous tag found. Starting from version 0.0.1")
 
     when:
-    service.compute([], "")
+    String nextVersionEmpty = service.compute([], "")
 
     then:
-    Upcoming4jException ex2 = thrown(Upcoming4jException)
-    ex2.message == "Cannot compute next version. Tag is null or empty."
+    nextVersionEmpty == "0.0.1"
+    1 * loggerMock.lifecycle("COMPUTE NEXT VERSION. COMMIT HISTORY SIZE: 0, TAG: ")
+    1 * loggerMock.lifecycle("No previous tag found. Starting from version 0.0.1")
+  }
+
+  def "compute should return starter version if current tag is NONE_TAG"() {
+    given:
+    String currentTag = LatestCreatedTagService.NONE_TAG
+
+    when:
+    String nextVersion = service.compute([], currentTag)
+
+    then:
+    nextVersion == "0.0.1"
+
+    and:
+    1 * loggerMock.lifecycle("COMPUTE NEXT VERSION. COMMIT HISTORY SIZE: 0, TAG: ${LatestCreatedTagService.NONE_TAG}")
+    1 * loggerMock.lifecycle("No previous tag found. Starting from version 0.0.1")
   }
 
   def "compute should throw exception if current tag (after stripping v) is not semantic version format"() {

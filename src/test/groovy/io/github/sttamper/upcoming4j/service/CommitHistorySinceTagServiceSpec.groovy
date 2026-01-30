@@ -103,4 +103,20 @@ class CommitHistorySinceTagServiceSpec extends Specification {
     1 * loggerMock.lifecycle("get commit messages: bash -c git log ${tag}..HEAD --pretty=format:%s")
     1 * loggerMock.lifecycle("1 commits found since tag: ${tag}")
   }
+
+  def "retrieve should return empty list and not execute git log when tag is NONE_TAG"() {
+    given:
+    String tag = LatestCreatedTagService.NONE_TAG
+
+    when:
+    List<String> result = service.retrieve(tag)
+
+    then:
+    result == []
+
+    and:
+    1 * loggerMock.lifecycle("RETRIVE COMMIT HISTORY SINCE TAG: ${tag}")
+    1 * loggerMock.lifecycle("No previous tag found. Returning empty commit history.")
+    0 * providersMock.exec(_)
+  }
 }
