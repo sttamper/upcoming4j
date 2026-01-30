@@ -11,8 +11,8 @@ so it can be safely combined with release tools like JReleaser, CI pipelines, or
 
 
 Tested with Gradle 8.14.3, `Upcoming4j` is [configuration cache](https://docs.gradle.org/8.14.3/userguide/configuration_cache.html) friendly, 
-making it fully compatible with future versions since this is the [preferred execution mode](https://blog.gradle.org/road-to-configuration-cache?_gl=1*1xwmelg*_gcl_au*MTk4NDg5NjQyMi4xNzY4OTE4OTQxLjU3MDM5NDguMTc2OTA0MjI4Ny4xNzY5MDQ1ODI2*_ga*Njg4NTY4MDQxLjE3Njg5MTg5NDE.*_ga_7W7NC6YNPT*czE3NjkyNjA5OTEkbzEzJGcxJHQxNzY5MjYxODM1JGo1OSRsMCRoMA..#preferred-mode-of-execution)
-since Gradle 9 onwards.
+making it fully compatible with future versions, since this is the [preferred execution mode](https://blog.gradle.org/road-to-configuration-cache?_gl=1*1xwmelg*_gcl_au*MTk4NDg5NjQyMi4xNzY4OTE4OTQxLjU3MDM5NDguMTc2OTA0MjI4Ny4xNzY5MDQ1ODI2*_ga*Njg4NTY4MDQxLjE3Njg5MTg5NDE.*_ga_7W7NC6YNPT*czE3NjkyNjA5OTEkbzEzJGcxJHQxNzY5MjYxODM1JGo1OSRsMCRoMA..#preferred-mode-of-execution)
+from Gradle 9 onwards.
 
 ### Prerequisites
 
@@ -41,7 +41,7 @@ Configuration cache friendly → fully compatible with Gradle’s configuration 
 
   ```groovy
   plugins {
-     id 'io.github.sttamper.upcoming4j' version '0.0.1'
+     id 'io.github.sttamper.upcoming4j' version '0.0.2'
   }
   ```
 
