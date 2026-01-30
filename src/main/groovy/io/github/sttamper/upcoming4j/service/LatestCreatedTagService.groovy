@@ -13,42 +13,35 @@ class LatestCreatedTagService {
   }
 
   String retrieve() throws Upcoming4jException {
-    project.logger.lifecycle("Retrieve the latest created git tag.")
-
+    project.logger.lifecycle("RETRIEVE THE LATEST CREATED TAG" )
     def gitFetchCommand = ["bash", "-c", "git fetch --tags --prune"]
-    project.logger.lifecycle("Git fetch command: ${gitFetchCommand.join(' ')}")
-
+    project.logger.lifecycle("fetch git tags: ${gitFetchCommand.join(' ')}" )
     project.providers.exec {
       commandLine(gitFetchCommand)
     }.standardOutput.asText.get()
-
-    project.logger.lifecycle("Git fetch command succeeded")
 
     def gitForEachRefCommand = [
         "bash",
         "-c",
         "git for-each-ref --sort=-creatordate --format='%(refname:short)' refs/tags | head -n 1"
     ]
-    project.logger.lifecycle("Git for each command: ${gitForEachRefCommand.join(' ')}")
-
+    project.logger.lifecycle("get the most recent tag by creation time: ${gitForEachRefCommand.join(' ')}")
     String latestGitTagRaw = project.providers.exec {
-      commandLine "bash", "-c",
-          "git for-each-ref --sort=-creatordate --format='%(refname:short)' refs/tags | head -n 1"
+      commandLine(gitForEachRefCommand)
     }.standardOutput.asText.get()
 
     String latestGitTag = latestGitTagRaw?.trim() ?: ""
     if (!latestGitTag) {
-      throw new Upcoming4jException("No git tags found in the repository")
+      throw new Upcoming4jException("Cannot retrieve last tag. No git tags found in the repository.")
     }
 
     if (!isTagFormatValid(latestGitTag)) {
       throw new Upcoming4jException(
-          "Invalid git tag format '${latestGitTag}'. Expected format is vX.Y.Z (example: v1.2.3)"
+          "Cannot retrieve last tag. Invalid git tag format '${latestGitTag}'. Expected format is vX.Y.Z (example: v1.2.3)"
       )
     }
 
-    project.logger.lifecycle("Git for each command succeeded. Latest Git tag: ${latestGitTag}")
-
+    project.logger.lifecycle("Latest Git tag: ${latestGitTag}")
     return latestGitTag
   }
 

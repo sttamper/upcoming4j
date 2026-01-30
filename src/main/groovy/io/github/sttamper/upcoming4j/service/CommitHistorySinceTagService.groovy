@@ -10,14 +10,14 @@ class CommitHistorySinceTagService {
   }
 
   List<String> retrieve(String tag) {
-    project.logger.lifecycle("Retrieve commit history since tag: ${tag}")
+    project.logger.lifecycle("RETRIVE COMMIT HISTORY SINCE TAG: ${tag}")
 
     def gitLogCommand = ["bash", "-c", "git log ${tag}..HEAD --pretty=format:%s"]
-    project.logger.lifecycle("Git log command: ${gitLogCommand.join(' ')}")
+    project.logger.lifecycle("get commit messages: ${gitLogCommand.join(' ')}")
 
 
     String commitMessagesRaw = project.providers.exec {
-      commandLine "bash", "-c", "git log ${tag}..HEAD --pretty=format:%s"
+      commandLine(gitLogCommand)
     }.standardOutput.asText.get()
 
     String commitMessages = commitMessagesRaw?.trim() ?: ""
@@ -27,8 +27,8 @@ class CommitHistorySinceTagService {
       return []
     }
 
-    def commitMessageList = commitMessages.readLines()  // safer than split('\n')
-    project.logger.lifecycle("Git log command succeeded, ${commitMessageList.size()} commits found since tag: ${tag}")
+    def commitMessageList = commitMessages.readLines()
+    project.logger.lifecycle("${commitMessageList.size()} commits found since tag: ${tag}")
 
     return commitMessageList
   }

@@ -13,21 +13,22 @@ class NextSemanticVersionService {
   }
 
   String compute(List<String> commitHistory, String currentTag) throws Upcoming4jException{
-    project.logger.lifecycle("Computing next semantic version based on commit history and current tag.")
+    project.logger.lifecycle("COMPUTE NEXT VERSION. COMMIT HISTORY SIZE: ${commitHistory.size()}, TAG: ${currentTag}")
     if (!currentTag) {
-      throw new Upcoming4jException("Current tag is null or empty.")
+      throw new Upcoming4jException("Cannot compute next version. Tag is null or empty.")
     }
 
     def currentVersionNumber = getVersionNumberFromTag(currentTag)
 
     if (!commitHistory || commitHistory.isEmpty()) {
-      project.logger.lifecycle("No commits to evaluate since tag: '${currentTag}'. Version remains the same.")
+      project.logger.lifecycle("No commits to evaluate since tag: '${currentTag}'.")
+      project.logger.lifecycle("Next version remains the same: '${currentVersionNumber}'")
       return currentVersionNumber
     }
 
     def matcher = currentVersionNumber =~ SEMVER_TAG_REGEX
     if (!matcher.find()) {
-      throw new Upcoming4jException("'${currentVersionNumber}' is not in semantic version format")
+      throw new Upcoming4jException("Cannot compute next version. '${currentVersionNumber}' is not in semantic version format")
     }
 
     int major = matcher[0][1] as int
@@ -45,10 +46,14 @@ class NextSemanticVersionService {
     if (majorBump) { major += 1; minor = 0; patch = 0 }
     else if (minorBump) { minor += 1; patch = 0 }
     else if (patchBump) { patch += 1 }
-    else project.logger.lifecycle("No conventional commits detected. Version remains the same.")
+    else {
+      project.logger.lifecycle("No conventional commits detected.")
+      project.logger.lifecycle("Next version remains the same: '${currentVersionNumber}'")
+      return currentVersionNumber
+    }
 
     def nextVersion = "${major}.${minor}.${patch}"
-    project.logger.lifecycle("Computed next version: ${nextVersion}")
+    project.logger.lifecycle("Next version: ${nextVersion}")
     return nextVersion
   }
 

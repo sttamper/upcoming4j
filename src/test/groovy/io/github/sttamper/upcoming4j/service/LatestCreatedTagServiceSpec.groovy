@@ -10,70 +10,73 @@ import spock.lang.Specification
 
 class LatestCreatedTagServiceSpec extends Specification {
 
-  Project projectMock
-  Logger loggerMock
-  ProviderFactory providersMock
-  LatestCreatedTagService service
+  private Project projectMock
+  private Logger loggerMock
+  private ProviderFactory providersMock
+  private LatestCreatedTagService service
 
   def setup() {
     projectMock = Mock(Project)
     loggerMock = Mock(Logger)
     providersMock = Mock(ProviderFactory)
+
     projectMock.logger >> loggerMock
     projectMock.providers >> providersMock
+
     service = new LatestCreatedTagService(projectMock)
   }
 
   def "retrieve should return latest valid git tag"() {
     given:
-    // Mock git fetch exec
-    ExecOutput fetchExecMock = Mock()
-    ExecOutput.StandardStreamContent fetchOutputMock = Mock()
-    Provider<String> fetchProviderMock = Mock()
-    fetchProviderMock.get() >> "" // git fetch output is not relevant
-    fetchOutputMock.asText >> fetchProviderMock
-    fetchExecMock.standardOutput >> fetchOutputMock
+    // Mock: git fetch --tags --prune
+    ExecOutput fetchExecMock = Mock(ExecOutput)
+    ExecOutput.StandardStreamContent fetchStdoutMock = Mock(ExecOutput.StandardStreamContent)
+    Provider<String> fetchTextProviderMock = Mock(Provider)
+    fetchTextProviderMock.get() >> ""
+    fetchStdoutMock.asText >> fetchTextProviderMock
+    fetchExecMock.standardOutput >> fetchStdoutMock
 
-    // Mock git for-each-ref exec
-    ExecOutput forEachExecMock = Mock()
-    ExecOutput.StandardStreamContent forEachOutputMock = Mock()
-    Provider<String> forEachProviderMock = Mock()
-    forEachProviderMock.get() >> "v1.2.3" // valid latest tag
-    forEachOutputMock.asText >> forEachProviderMock
-    forEachExecMock.standardOutput >> forEachOutputMock
+    // Mock: git for-each-ref ... | head -n 1
+    ExecOutput forEachExecMock = Mock(ExecOutput)
+    ExecOutput.StandardStreamContent forEachStdoutMock = Mock(ExecOutput.StandardStreamContent)
+    Provider<String> forEachTextProviderMock = Mock(Provider)
+    forEachTextProviderMock.get() >> "v1.2.3\n"
+    forEachStdoutMock.asText >> forEachTextProviderMock
+    forEachExecMock.standardOutput >> forEachStdoutMock
 
-    // Sequential exec calls
+    // First exec() call returns fetch, second returns for-each-ref
     providersMock.exec(_) >>> [fetchExecMock, forEachExecMock]
 
     when:
-    def latestTag = service.retrieve()
+    String latestTag = service.retrieve()
 
     then:
     latestTag == "v1.2.3"
 
     and:
-    1 * loggerMock.lifecycle("Retrieve the latest created git tag.")
-    1 * loggerMock.lifecycle("Git fetch command: bash -c git fetch --tags --prune")
-    1 * loggerMock.lifecycle("Git fetch command succeeded")
-    1 * loggerMock.lifecycle("Git for each command: bash -c git for-each-ref --sort=-creatordate --format='%(refname:short)' refs/tags | head -n 1")
-    1 * loggerMock.lifecycle("Git for each command succeeded. Latest Git tag: v1.2.3")
+    1 * loggerMock.lifecycle("RETRIEVE THE LATEST CREATED TAG")
+    1 * loggerMock.lifecycle("fetch git tags: bash -c git fetch --tags --prune")
+    1 * loggerMock.lifecycle(
+        "get the most recent tag by creation time: bash -c git for-each-ref --sort=-creatordate --format='%(refname:short)' refs/tags | head -n 1"
+    )
+    1 * loggerMock.lifecycle("Latest Git tag: v1.2.3")
   }
 
   def "retrieve should throw exception for invalid git tag format"() {
     given:
-    ExecOutput fetchExecMock = Mock()
-    ExecOutput.StandardStreamContent fetchOutputMock = Mock()
-    Provider<String> fetchProviderMock = Mock()
-    fetchProviderMock.get() >> ""
-    fetchOutputMock.asText >> fetchProviderMock
-    fetchExecMock.standardOutput >> fetchOutputMock
+    ExecOutput fetchExecMock = Mock(ExecOutput)
+    ExecOutput.StandardStreamContent fetchStdoutMock = Mock(ExecOutput.StandardStreamContent)
+    Provider<String> fetchTextProviderMock = Mock(Provider)
+    fetchTextProviderMock.get() >> ""
+    fetchStdoutMock.asText >> fetchTextProviderMock
+    fetchExecMock.standardOutput >> fetchStdoutMock
 
-    ExecOutput forEachExecMock = Mock()
-    ExecOutput.StandardStreamContent forEachOutputMock = Mock()
-    Provider<String> forEachProviderMock = Mock()
-    forEachProviderMock.get() >> "invalid_tag" // invalid tag
-    forEachOutputMock.asText >> forEachProviderMock
-    forEachExecMock.standardOutput >> forEachOutputMock
+    ExecOutput forEachExecMock = Mock(ExecOutput)
+    ExecOutput.StandardStreamContent forEachStdoutMock = Mock(ExecOutput.StandardStreamContent)
+    Provider<String> forEachTextProviderMock = Mock(Provider)
+    forEachTextProviderMock.get() >> "invalid_tag"
+    forEachStdoutMock.asText >> forEachTextProviderMock
+    forEachExecMock.standardOutput >> forEachStdoutMock
 
     providersMock.exec(_) >>> [fetchExecMock, forEachExecMock]
 
@@ -81,25 +84,26 @@ class LatestCreatedTagServiceSpec extends Specification {
     service.retrieve()
 
     then:
-    def ex = thrown(Upcoming4jException)
-    ex.message == "Invalid git tag format 'invalid_tag'. Expected format is vX.Y.Z (example: v1.2.3)"
+    Upcoming4jException ex = thrown(Upcoming4jException)
+    ex.message ==
+        "Cannot retrieve last tag. Invalid git tag format 'invalid_tag'. Expected format is vX.Y.Z (example: v1.2.3)"
   }
 
   def "retrieve should throw exception if no tags found"() {
     given:
-    ExecOutput fetchExecMock = Mock()
-    ExecOutput.StandardStreamContent fetchOutputMock = Mock()
-    Provider<String> fetchProviderMock = Mock()
-    fetchProviderMock.get() >> ""
-    fetchOutputMock.asText >> fetchProviderMock
-    fetchExecMock.standardOutput >> fetchOutputMock
+    ExecOutput fetchExecMock = Mock(ExecOutput)
+    ExecOutput.StandardStreamContent fetchStdoutMock = Mock(ExecOutput.StandardStreamContent)
+    Provider<String> fetchTextProviderMock = Mock(Provider)
+    fetchTextProviderMock.get() >> ""
+    fetchStdoutMock.asText >> fetchTextProviderMock
+    fetchExecMock.standardOutput >> fetchStdoutMock
 
-    ExecOutput forEachExecMock = Mock()
-    ExecOutput.StandardStreamContent forEachOutputMock = Mock()
-    Provider<String> forEachProviderMock = Mock()
-    forEachProviderMock.get() >> "" // no tags at all
-    forEachOutputMock.asText >> forEachProviderMock
-    forEachExecMock.standardOutput >> forEachOutputMock
+    ExecOutput forEachExecMock = Mock(ExecOutput)
+    ExecOutput.StandardStreamContent forEachStdoutMock = Mock(ExecOutput.StandardStreamContent)
+    Provider<String> forEachTextProviderMock = Mock(Provider)
+    forEachTextProviderMock.get() >> "   \n"  // trims to empty
+    forEachStdoutMock.asText >> forEachTextProviderMock
+    forEachExecMock.standardOutput >> forEachStdoutMock
 
     providersMock.exec(_) >>> [fetchExecMock, forEachExecMock]
 
@@ -107,7 +111,7 @@ class LatestCreatedTagServiceSpec extends Specification {
     service.retrieve()
 
     then:
-    def ex = thrown(Upcoming4jException)
-    ex.message == "No git tags found in the repository"
+    Upcoming4jException ex = thrown(Upcoming4jException)
+    ex.message == "Cannot retrieve last tag. No git tags found in the repository."
   }
 }
